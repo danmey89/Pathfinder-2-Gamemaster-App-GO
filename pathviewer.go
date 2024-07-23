@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"html/template"
 	"io"
 	"log"
 	"net/http"
@@ -29,6 +30,10 @@ var proficiencies = [20]string{"perception", "fortitude", "reflex", "will", "acr
 var flagVar1 bool
 var flagVar2 bool
 var charMap = make(map[int]map[string]interface{})
+
+var templates = template.Must(template.ParseFiles("templates/index.html"))
+
+var fs = http.FileServer(http.Dir("./static"))
 
 func init() {
 	flag.BoolVar(&flagVar1, "createDB", false, "Initialize Database")
@@ -62,6 +67,20 @@ func main() {
 
 		fmt.Println("Server running at http://localhost:8080")
 		log.Fatal(http.ListenAndServe(":8080", mux))
+	}
+}
+
+func indexHandler(w http.ResponseWriter, r *http.Request) {
+
+	p := Page{
+		Proficiencies: proficiencies,
+		Abilities:     abilities,
+		Data:          charMap,
+	}
+
+	err := templates.ExecuteTemplate(w, "index.html", p)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }
 
