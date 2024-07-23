@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>Pathfinder GM App</title>
+        <title>Pathroller</title>
         <meta name="viewport" content="width=device-width initial-scale=1"/>
         <link rel="stylesheet" href="/static/style.css"/>
     </head>
     <body>
         <header>
-            <h1>Pathfinder GM App</h1>
+            <h1>Pathroller</h1>
         </header>
         <main>
             <section>
@@ -61,7 +61,10 @@
         
                 </div>
 
-            </section>   
+            </section>
+            <section id="details">
+                {{ charDetails . }}
+            </section>
         </main>
         <script src="/static/roll_it.js"></script>
         <script>const data = {{ .Data }};</script>

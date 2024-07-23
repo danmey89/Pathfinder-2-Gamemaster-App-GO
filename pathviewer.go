@@ -61,20 +61,7 @@ func main() {
 	if !flagVar1 && !flagVar2 {
 		loadCharacters(pathfinderDB)
 
-		index = template.Must(template.New("testTempl.gohtml").Funcs(template.FuncMap{
-
-			"charList": func(p Page) template.HTML {
-
-				var list string
-				for _, name := range p.Names {
-					c := p.Data[name]
-					s := fmt.Sprintf(`<option class="statListOpt" value="%s">%s level %d %s %s %s AC: %d</option>`,
-						name, name, c["Level"], c["Ancestry"], c["Class"], c["Background"], c["AC"])
-					list += s
-				}
-				return template.HTML(list)
-
-			}}).ParseFiles("templates/testTempl.gohtml"))
+		index = template.Must(template.New("index.gohtml").Funcs(funcMap).ParseFiles("templates/index.gohtml"))
 
 		mux := http.NewServeMux()
 
