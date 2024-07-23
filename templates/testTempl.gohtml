@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Pathfinder GM App</title>
+        <meta name="viewport" content="width=device-width initial-scale=1"/>
+        <link rel="stylesheet" href="/static/style.css"/>
+    </head>
+    <body>
+        <header>
+            <h1>Pathfinder GM App</h1>
+        </header>
+        <main>
+            <section>
+                <div class="column">
+                    <label for="prof_list"><h3>Proficiencies</h3></label>
+                        <select id="prof_list" size="{{.Proficiencies|len}}">
+                            {{ range .Proficiencies }}
+                            <option value="{{.}}">{{ . }}</option>
+                            {{end}}
+                        </select>
+                </div>
+
+                <div class="column">
+                    <label for="char_list"><h3>Characters</h3></label>
+                    <select id="char_list" size="{{.Names|len}}" multiple>
+
+                        {{ charList . }}
+        
+                    </select>
+
+                    <div id="output_box">
+                        <div id="anchor"></div>
+                    </div>
+
+                    <button id="roll_it" onclick="roll(dataset)">Roll it!</button>
+
+                </div>
+
+                <div class="column">
+                    <h3>Turn Order</h3>
+                    <div id="turn_order">
+        
+                        <div id="turn_count_box">
+                            <div><p>Turn: </p></div>
+                            <div id="turn_counter"></div>
+                        </div>
+        
+                    </div>
+        
+                    <div class="turn_controls">
+                        <input type="text" id="turn_name">
+                        <input type="text" id="turn_num">
+                        <button id="add_turn" onclick="add_turn()">Add Turn</button> 
+                    </div>
+        
+                    <div class="turn_controls">
+                        <button id="clear" onclick="clear_initiative()">Clear</button>
+                        <button id="sort" onclick="sort()">Sort</button>
+                        <button id="next_turn" onclick="next_turn()">Next</button>
+                    </div>
+        
+                </div>
+
+            </section>   
+        </main>
+        <script src="/static/roll_it.js"></script>
+        <script>const data = {{ .Data }};</script>
+    </body>
+    </html>

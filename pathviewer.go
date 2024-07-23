@@ -24,16 +24,16 @@ var base = map[string]string{
 
 var abilities = [6]string{"Str", "Dex", "Con", "Int", "Wis", "Cha"}
 
-var proficiencies = [20]string{"perception", "fortitude", "reflex", "will", "acrobatics", "arcana", "athletics", "crafting", "deception", "diplomacy",
-	"intimidation", "medicine", "nature", "occultism", "performance", "religion", "society", "stealth", "survival", "thievery"}
+var proficiencies = [20]string{"Perception", "Fortitude", "Reflex", "Will", "Acrobatics", "Arcana", "Athletics", "Crafting", "Deception", "Diplomacy",
+	"Intimidation", "Medicine", "Nature", "Occultism", "Performance", "Religion", "Society", "Stealth", "Survival", "Thievery"}
 
 var flagVar1 bool
 var flagVar2 bool
-var charMap = make(map[int]map[string]interface{})
-
-var templates = template.Must(template.ParseFiles("templates/index.html"))
+var charMap = make(map[string]map[string]interface{})
 
 var fs = http.FileServer(http.Dir("./static"))
+
+var index *template.Template
 
 func init() {
 	flag.BoolVar(&flagVar1, "createDB", false, "Initialize Database")
@@ -57,8 +57,24 @@ func main() {
 	if flagVar2 {
 		saveData(pathfinderDB)
 	}
+
 	if !flagVar1 && !flagVar2 {
 		loadCharacters(pathfinderDB)
+
+		index = template.Must(template.New("testTempl.gohtml").Funcs(template.FuncMap{
+
+			"charList": func(p Page) template.HTML {
+
+				var list string
+				for _, name := range p.Names {
+					c := p.Data[name]
+					s := fmt.Sprintf(`<option class="statListOpt" value="%s">%s level %d %s %s %s AC: %d</option>`,
+						name, name, c["Level"], c["Ancestry"], c["Class"], c["Background"], c["AC"])
+					list += s
+				}
+				return template.HTML(list)
+
+			}}).ParseFiles("templates/testTempl.gohtml"))
 
 		mux := http.NewServeMux()
 
@@ -72,13 +88,21 @@ func main() {
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
 
+	names := make([]string, len(charMap))
+	i := 0
+	for k := range charMap {
+		names[i] = k
+		i++
+	}
+
 	p := Page{
 		Proficiencies: proficiencies,
 		Abilities:     abilities,
 		Data:          charMap,
+		Names:         names,
 	}
 
-	err := templates.ExecuteTemplate(w, "index.html", p)
+	err := index.Execute(w, p)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
@@ -172,7 +196,11 @@ func calculateModifiers(p *Character) {
 		a := reflect.Indirect(s0).FieldByName(v).Int()
 		p := reflect.Indirect(s1).FieldByName(k).Int()
 
-		sum := l + a + p
+		sum := a + p
+
+		if p > 0 {
+			sum += l
+		}
 
 		reflect.ValueOf(pro).Elem().FieldByName(k).SetInt(sum)
 	}
@@ -265,7 +293,7 @@ func insertRow(c *Character, db *sql.DB) {
 
 }
 
-func loadCharacters(db *sql.DB) map[int]map[string]interface{} {
+func loadCharacters(db *sql.DB) {
 
 	rows, err := db.Query(`SELECT * FROM characters`)
 	if err != nil {
@@ -275,9 +303,6 @@ func loadCharacters(db *sql.DB) map[int]map[string]interface{} {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	output := make(map[int]map[string]interface{})
-	i := 0
 
 	for rows.Next() {
 
@@ -297,10 +322,11 @@ func loadCharacters(db *sql.DB) map[int]map[string]interface{} {
 			m[colName] = *val
 		}
 
-		charMap[i] = m
-		i++
+		var name string = fmt.Sprintf("%v", m["Name"])
+
+		charMap[name] = m
+
 	}
-	return output
 }
 
 type CharacterWrap struct {
@@ -386,5 +412,6 @@ type AC struct {
 type Page struct {
 	Proficiencies [20]string
 	Abilities     [6]string
-	Data          map[int]map[string]interface{}
+	Data          map[string]map[string]interface{}
+	Names         []string
 }
