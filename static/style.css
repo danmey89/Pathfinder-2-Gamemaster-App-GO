@@ -1,0 +1,243 @@
+html {
+    background-color: #292929;
+    color: whitesmoke;
+}
+
+body {
+    max-width: 1200px;
+    display: block;
+    margin: 0 auto;
+}
+
+header {
+    display: flex;
+    justify-content: center;
+    margin-top: 15px;
+    background-color: #0b0d1c;
+}
+
+form {
+    margin-top: 15px;
+}
+
+.column {
+    margin: 0 25px;
+    display: block;
+}
+#prof_list {
+    width: 130px;
+    margin-bottom: 15px;
+}
+#char_list {
+    width: 500px;
+}
+section {
+    display: flex;
+    width: 100%;
+    height: auto;
+    justify-content: space-between;
+    background-color: #0b0d1c;
+    margin-top: 15px;
+}
+select {
+    background-color: #0b0d1c;
+    color: whitesmoke;
+    font-size: medium;
+}
+option:checked {
+    background-color: salmon;
+    color: #0b0d1c;
+}
+#output_box {
+    width: 496px;
+    height: 276px;
+    border: whitesmoke inset 2px;
+    margin: 15px 0;
+    overflow: scroll;
+    
+}
+#anchor {
+    overflow-anchor: auto;
+    height: 1px;
+    width: 2px;
+}
+.text_output {
+    margin: 5px 0;
+    font-size: 12pt;
+    overflow-anchor: none;
+}
+#roll_it {
+    width: 500px;
+    height: 20px;
+    text-align: center;
+    font-size: medium;
+}
+#turn_order {
+    border: whitesmoke inset 2px;
+    width: 350px;
+    height: 366px;
+    margin-bottom: 15px;
+}
+#turn_count_box {
+    border-bottom: whitesmoke inset 2px;
+    vertical-align: top;
+    height: 25px;
+    width: 350px;
+    display: inline-flex;
+}
+#turn_count_box div {
+    margin: 2px;
+}
+#turn_count_box p {
+    margin: 0;
+}
+#add_turn, #next_turn, #clear, #sort {
+    height: 23px;
+    width: 70px;
+    vertical-align: top;
+}
+#next_turn {
+    width: 181px;
+}
+#clear {
+    background-color: darkred;
+    border-color: red;
+    color: whitesmoke;
+}
+#turn_num {
+    width: 25px;
+    height: 17px;
+    vertical-align: top;
+}
+#turn_name {
+    width: 210px;
+    height: 17px;
+    vertical-align: top;
+}
+.turn_controls{
+    height: 25px;
+    display: inline-block;
+    margin-bottom: 5px;
+    margin-left: 10px;
+}
+footer {
+    background-color: #0b0d1c;
+    margin: 15px auto;
+    height: 50px;
+}
+footer p {
+    padding: 15px;
+}
+
+.hex {
+    margin-top: 50px;
+    margin-right: 15px;
+    width: 104px;
+    height: 60px;
+    background: whitesmoke;
+    position: relative;
+}
+.hex:before, .hex:after {
+    content:"";
+    border-left: 52px solid transparent;
+    border-right: 52px solid transparent;
+    position: absolute;
+}
+.hex:before {
+    top: -30px;
+    border-bottom: 30px solid whitesmoke;
+}
+.hex:after {
+    bottom: -30px;
+    border-top: 30px solid whitesmoke;
+}
+
+.hex.inner {
+    margin-top: 0;
+    background-color: #0b0d1c;
+    -webkit-transform: scale(.9, .9);
+    -moz-transform: scale(.9, .9);
+    transform: scale(.9, .9);
+    z-index:8;
+}
+.hex.inner:before {
+    border-bottom: 30px solid #0b0d1c;
+}
+.hex.inner:after {
+    border-top: 30px solid #0b0d1c;
+}
+.hex.inner p, h2 {
+    text-align: center;
+}
+.attributes {
+    height: 150px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    vertical-align: top;
+}
+.hex h2, .save_inner h2 {
+    margin: 0;
+}
+.hex p, .ac p, .save_inner p {
+    margin: 10px;
+}
+#details {
+    display: block;
+}
+.character_details {
+    padding: 25px 0;
+    margin: auto;
+    max-width: 900px;
+    border-bottom: 2px solid whitesmoke;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    
+}
+.character_details:last-of-type {
+    border: none;
+}
+.character_details h3 {
+    margin: 0;
+}
+.ac {
+    border: 4px solid whitesmoke;
+    width: 90px;
+    height: 104px;
+    border-bottom-left-radius: 50% 80%;
+    border-bottom-right-radius: 50% 80%;
+    margin-top: 25px;
+    text-align: center;
+}
+.ac h2 {
+    margin: 15px 0 0 0;
+}
+table, td {
+    border: 1px solid whitesmoke;
+    border-collapse: collapse;
+}
+td {
+    padding: 3px 10px;
+}
+table {
+    margin-top: 15px;
+}
+.saves {
+    display: flex;
+    justify-content: space-evenly;
+}
+.save {
+    border: 4px solid whitesmoke;
+    rotate: 45deg;
+    width: 80px;
+    height: 80px;
+    margin: 20px;
+}
+.save_inner{
+    rotate: -45deg;
+    text-align: center;
+    width: 100px;
+    height: 100px;
+    
+}

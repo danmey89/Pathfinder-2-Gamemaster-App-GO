@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"net/http"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -20,14 +21,18 @@ var base = map[string]string{
 	"Crafting": "Int", "Deception": "Cha", "Diplomacy": "Cha", "Intimidation": "Cha", "Medicine": "Wis", "Nature": "Wis", "Occultism": "Int",
 	"Performance": "Cha", "Religion": "Wis", "Society": "Int", "Stealth": "Dex", "Survival": "Wis", "Thievery": "Dex"}
 
-var abilities = []string{"Str", "Dex", "Con", "Int", "Wis", "Cha"}
+var abilities = [6]string{"Str", "Dex", "Con", "Int", "Wis", "Cha"}
+
+var proficiencies = [20]string{"perception", "fortitude", "reflex", "will", "acrobatics", "arcana", "athletics", "crafting", "deception", "diplomacy",
+	"intimidation", "medicine", "nature", "occultism", "performance", "religion", "society", "stealth", "survival", "thievery"}
 
 var flagVar1 bool
 var flagVar2 bool
+var charMap = make(map[int]map[string]interface{})
 
 func init() {
 	flag.BoolVar(&flagVar1, "createDB", false, "Initialize Database")
-	flag.BoolVar(&flagVar2, "loadData", false, "Load JSON into Database")
+	flag.BoolVar(&flagVar2, "saveData", false, "Load JSON into Database")
 }
 
 func main() {
@@ -45,11 +50,22 @@ func main() {
 	defer pathfinderDB.Close()
 
 	if flagVar2 {
-		loadData(pathfinderDB)
+		saveData(pathfinderDB)
+	}
+	if !flagVar1 && !flagVar2 {
+		loadCharacters(pathfinderDB)
+
+		mux := http.NewServeMux()
+
+		mux.HandleFunc("/", indexHandler)
+		mux.Handle("/static/", http.StripPrefix("/static", fs))
+
+		fmt.Println("Server running at http://localhost:8080")
+		log.Fatal(http.ListenAndServe(":8080", mux))
 	}
 }
 
-func loadData(db *sql.DB) {
+func saveData(db *sql.DB) {
 
 	dir, err := os.ReadDir("./docs")
 	if err != nil {
@@ -230,6 +246,44 @@ func insertRow(c *Character, db *sql.DB) {
 
 }
 
+func loadCharacters(db *sql.DB) map[int]map[string]interface{} {
+
+	rows, err := db.Query(`SELECT * FROM characters`)
+	if err != nil {
+		log.Fatal(err)
+	}
+	cols, err := rows.Columns()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	output := make(map[int]map[string]interface{})
+	i := 0
+
+	for rows.Next() {
+
+		columns := make([]interface{}, len(cols))
+		columnPointers := make([]interface{}, len(cols))
+		for i := range columns {
+			columnPointers[i] = &columns[i]
+		}
+
+		if err := rows.Scan(columnPointers...); err != nil {
+			log.Fatal(err)
+		}
+
+		m := make(map[string]interface{})
+		for i, colName := range cols {
+			val := columnPointers[i].(*interface{})
+			m[colName] = *val
+		}
+
+		charMap[i] = m
+		i++
+	}
+	return output
+}
+
 type CharacterWrap struct {
 	Exists    bool      `json:"success"`
 	Character Character `json:"build"`
@@ -308,4 +362,10 @@ type Training struct {
 
 type AC struct {
 	AC int `json:"acTotal"`
+}
+
+type Page struct {
+	Proficiencies [20]string
+	Abilities     [6]string
+	Data          map[int]map[string]interface{}
 }
