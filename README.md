@@ -11,7 +11,8 @@ two test files that should be replaced by your own files.
 
 Commands:
 
-To initialize the database, call the app with flag:
+To initialize the database, call the app with flag:  
+
 -createDB true
 
 To load the database with JSON files call the app with:
