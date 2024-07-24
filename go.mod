@@ -1,4 +1,4 @@
-module .main
+module github.com/danmey89/Pathroller
 
 go 1.22.5
 
