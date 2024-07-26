@@ -33,8 +33,6 @@ var charMap = make(map[string]map[string]interface{})
 
 var fs = http.FileServer(http.Dir("./static"))
 
-var index *template.Template
-
 func init() {
 	flag.BoolVar(&flagVar1, "createDB", false, "Initialize Database")
 	flag.BoolVar(&flagVar2, "saveData", false, "Load JSON into Database")
@@ -61,11 +59,11 @@ func main() {
 	if !flagVar1 && !flagVar2 {
 		loadCharacters(pathfinderDB)
 
-		index = template.Must(template.New("index.gohtml").Funcs(funcMap).ParseFiles("templates/index.gohtml"))
+		index := template.Must(template.New("index.gohtml").Funcs(funcMap).ParseFiles("templates/index.gohtml"))
 
 		mux := http.NewServeMux()
 
-		mux.HandleFunc("/", indexHandler)
+		mux.HandleFunc("/", Index(index))
 		mux.Handle("/static/", http.StripPrefix("/static", fs))
 
 		fmt.Println("Server running at http://localhost:8080")
@@ -73,25 +71,28 @@ func main() {
 	}
 }
 
-func indexHandler(w http.ResponseWriter, r *http.Request) {
+func Index(temp *template.Template) http.HandlerFunc {
 
-	names := make([]string, len(charMap))
-	i := 0
-	for k := range charMap {
-		names[i] = k
-		i++
-	}
+	return func(w http.ResponseWriter, r *http.Request) {
 
-	p := Page{
-		Proficiencies: proficiencies,
-		Abilities:     abilities,
-		Data:          charMap,
-		Names:         names,
-	}
+		names := make([]string, len(charMap))
+		i := 0
+		for k := range charMap {
+			names[i] = k
+			i++
+		}
 
-	err := index.Execute(w, p)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		p := Page{
+			Proficiencies: proficiencies,
+			Abilities:     abilities,
+			Data:          charMap,
+			Names:         names,
+		}
+
+		err := temp.Execute(w, p)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
 	}
 }
 
